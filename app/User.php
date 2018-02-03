@@ -15,6 +15,9 @@ class User extends Authenticatable
     const USUARIO_ADMINISTRADOR = 'true';
     const USUARIO_NO_ADMINISTRADOR = 'false';
 
+    //Necesario para que se establezca la relación en la tabla pivote
+    protected $table = 'users';
+
     /**
      * The attributes that are mass assignable.
      *
