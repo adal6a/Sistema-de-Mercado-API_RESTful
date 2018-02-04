@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        
+
         /* Limpiar toda la BD antes de ejecutar los seeds */
 
         //Evitar inconsistencias al momento de limpiar
@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
         DB::table('category_product')->truncate();
 
         //Cantidad de datos
-        $cantidadUsuarios = 200;
+        $cantidadUsuarios = 1000;
         $cantidadCategorias = 30;
         $cantidadProductos = 1000;
         $cantidadTransacciones = 1000;
@@ -46,7 +46,7 @@ class DatabaseSeeder extends Seeder
 
             $producto->categories()->attach($categorias);
         });
-        
+
         factory(Transaction::class, $cantidadTransacciones)->create();
     }
 }
