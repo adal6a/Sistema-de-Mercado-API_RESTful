@@ -81,7 +81,7 @@ class Handler extends ExceptionHandler
         }
 
         if($exception instanceof AuthorizationException){
-            return $this->errorResponse("No existe tienes permiso para ejecutar esta acción", 403);
+            return $this->errorResponse("No tienes permiso para ejecutar esta acción", 403);
         }
 
         if($exception instanceof NotFoundHttpException){
@@ -96,7 +96,15 @@ class Handler extends ExceptionHandler
             return $this->errorResponse($exception->getMessage(), $exception->getStatusCode());
         }
 
-        return parent::render($request, $exception);
+        if(config('app.debug')){
+            //Usar esto en desarrollo
+            return parent::render($request, $exception);
+        }else{
+            //Usar esto en producción
+            return $this->errorResponse("Falla inesperada. Intenta más tarde.", 505);
+        }
+
+
     }
 
     /*Este método se utiliza para retornar error de autenticación*/
