@@ -3,11 +3,17 @@
 namespace App\Http\Controllers\User;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 
 use App\User;
 
-class UserController extends Controller
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
+
+/*Ahora todo extenderá de ApiController para tener centralizados la llamada de los métodos
+con un trait
+*/
+class UserController extends ApiController
 {
     /**
      * Display a listing of the resource.
@@ -18,7 +24,8 @@ class UserController extends Controller
     {
         $usuarios = User::all();
 
-        return response()->json(['data' => $usuarios], 200);
+        //Este método viene del trait que está siendo usado por ApiController
+        return $this->showAll($usuarios);
     }
 
     /**
@@ -60,7 +67,8 @@ class UserController extends Controller
 
         $usuario = User::create($campos);
 
-        return response()->json(['data' => $usuario, 201]);
+        //Este método viene del trait que está siendo usado por ApiController
+        return $this->showOne($usuario, 201);
     }
 
     /**
@@ -73,7 +81,8 @@ class UserController extends Controller
     {
         $usuario = User::findOrFail($id);
 
-        return response()->json(['data' => $usuario], 200);
+        //Este método viene del trait que está siendo usado por ApiController
+        return $this->showOne($usuario);
     }
 
     /**
@@ -124,11 +133,8 @@ class UserController extends Controller
 
         if($request->has('admin')){
             if(!$usuario->esVerificado()){
-                return response()->json([
-                    'error'=> 'Únicamente los usuarios verificados pueden cambiar su valor de administrador',
-                    'code' => 409
-                ],
-                409);
+                //Este método viene del trait que está siendo usado por ApiController
+                return $this->errorResponse('Únicamente los usuarios verificados pueden cambiar su valor de administrador', 409);
             }
 
             $usuario->admin = $request->admin;
@@ -136,16 +142,14 @@ class UserController extends Controller
 
         //Este método valida si realmente los datos cambian con respecto a los del usuario que lo ha solicitado
         if (!$usuario->isDirty()){
-            return response()->json([
-                'error'=> 'Se debe especificar al menos un valor diferente para actualizar',
-                'code' => 422
-            ],
-            422);
+            //Este método viene del trait que está siendo usado por ApiController
+            return $this->errorResponse('Se debe especificar al menos un valor diferente para actualizar', 422);
         }
 
         $usuario->save();
 
-        return response()->json(['data' => $usuario], 200);
+        //Este método viene del trait que está siendo usado por ApiController
+        return $this->showOne($usuario);
     }
 
     /**
@@ -160,6 +164,7 @@ class UserController extends Controller
 
         $usuario->delete();
 
-        return response()->json(['data' => $usuario], 200);
+        //Este método viene del trait que está siendo usado por ApiController
+        return $this->showOne($usuario);
     }
 }

@@ -3,11 +3,16 @@
 namespace App\Http\Controllers\Buyer;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 
 Use App\Buyer;
 
-class BuyerController extends Controller
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
+/*Ahora todo extenderá de ApiController para tener centralizados la llamada de los métodos
+con un trait
+*/
+class BuyerController extends ApiController
 {
     /**
      * Display a listing of the resource.
@@ -18,7 +23,8 @@ class BuyerController extends Controller
     {
         $compradores = Buyer::has('transactions')->get();
 
-        return response()->json(['data' => $compradores], 200);
+        //Este método viene del trait que está siendo usado por ApiController
+        return $this->showAll($compradores);
     }
 
     /**
@@ -52,7 +58,8 @@ class BuyerController extends Controller
     {
         $comprador = Buyer::has('transactions')->findOrFail($id);
 
-        return response()->json(['data' => $comprador], 200);
+        //Este método viene del trait que está siendo usado por ApiController
+        return $this->showOne($comprador);
     }
 
     /**

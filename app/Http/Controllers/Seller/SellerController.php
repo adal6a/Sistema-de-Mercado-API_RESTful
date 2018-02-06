@@ -3,11 +3,16 @@
 namespace App\Http\Controllers\Seller;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 
 Use App\Seller;
 
-class SellerController extends Controller
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
+/*Ahora todo extenderá de ApiController para tener centralizados la llamada de los métodos
+con un trait
+*/
+class SellerController extends ApiController
 {
     /**
      * Display a listing of the resource.
@@ -18,7 +23,8 @@ class SellerController extends Controller
     {
         $vendedores = Seller::has('products')->get();
 
-        return response()->json(['data' => $vendedores], 200);
+        //Este método viene del trait que está siendo usado por ApiController
+        return $this->showAll($vendedores);
     }
 
     /**
@@ -52,7 +58,8 @@ class SellerController extends Controller
     {
         $vendedor = Seller::has('products')->findOrFail($id);
 
-        return response()->json(['data' => $vendedor], 200);
+        //Este método viene del trait que está siendo usado por ApiController
+        return $this->showOne($vendedor);
     }
 
     /**

@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Category;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 
-class CategoryController extends Controller
+/*Ahora todo extenderá de ApiController para tener centralizados la llamada de los métodos
+con un trait
+*/
+class CategoryController extends ApiController
 {
     /**
      * Display a listing of the resource.

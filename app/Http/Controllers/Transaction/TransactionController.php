@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Transaction;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 
-class TransactionController extends Controller
+/*Ahora todo extenderá de ApiController para tener centralizados la llamada de los métodos
+con un trait
+*/
+class TransactionController extends ApiController
 {
     /**
      * Display a listing of the resource.

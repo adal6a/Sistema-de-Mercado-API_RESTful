@@ -3,10 +3,28 @@
 namespace App\Exceptions;
 
 use Exception;
+
+use App\Traits\ApiResponser;
+
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Auth\AuthorizationException;
+
+use Illuminate\Validation\ValidationException;
+
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Handler extends ExceptionHandler
 {
+
+    //Trait
+    Use ApiResponser;
+
     /**
      * A list of the exception types that are not reported.
      *
@@ -48,6 +66,58 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        /*Acá es donde se obtienen los tipos de excepciones*/
+        if($exception instanceof ValidationException){
+            return $this->convertValidationExceptionToResponse($exception, $request);
+        }
+
+        if($exception instanceof ModelNotFoundException){
+            $modelo = strtolower(class_basename($exception->getModel()));
+            return $this->errorResponse("No existe ninguna instancia de {$modelo} con el id especificado", 404);
+        }
+
+        if($exception instanceof AuthenticationException){
+            return $this->unauthenticated($request, $exception);
+        }
+
+        if($exception instanceof AuthorizationException){
+            return $this->errorResponse("No existe tienes permiso para ejecutar esta acción", 403);
+        }
+
+        if($exception instanceof NotFoundHttpException){
+            return $this->errorResponse("No se encontró la URL especificada", 404);
+        }
+
+        if($exception instanceof MethodNotAllowedHttpException){
+            return $this->errorResponse("El método especificado en la petición no es válido", 405);
+        }
+
+        if($exception instanceof HttpException){
+            return $this->errorResponse($exception->getMessage(), $exception->getStatusCode());
+        }
+
         return parent::render($request, $exception);
+    }
+
+    /*Este método se utiliza para retornar error de autenticación*/
+    public function unauthenticated($request, AuthenticationException $exception){
+        return $this->errorResponse("No autenticado", 401);
+    }
+
+    /*Este método se utiliza para retornar la lista de errores de validación al hacer un store o update*/
+    protected function convertValidationExceptionToResponse(ValidationException $e, $request)
+    {
+
+        return response()->json([
+            'error' => $e->errors(),
+            'code' => 422
+        ], 422);
+
+        /*NO ENTIENDO POR QUÉ NINGUNA DE ESTAS ASIGNACIONES NO ES POSIBLE*/
+        //$errors = $e->errors();
+        //$errors = $e->getMessages();
+
+        /*Acá se hace uso del trait ApiResponser*/
+        //$this->errorResponse($errors, 422);
     }
 }
