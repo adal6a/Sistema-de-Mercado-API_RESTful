@@ -18,15 +18,18 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
 
+        /**************************************************/
+        /* Para MySQL/MariaDB */
         /* Limpiar toda la BD antes de ejecutar los seeds */
 
         //Evitar inconsistencias al momento de limpiar
-        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+        //DB::statement('SET FOREIGN_KEY_CHECKS = 0');
 
-        User::truncate();
-        Category::truncate();
-        Product::truncate();
-        Transaction::truncate();
+        //User::truncate();
+        //Category::truncate();
+        //Product::truncate();
+        //Transaction::truncate();
+        /**************************************************/
 
         //Acceso a la tabla pivote para poder limpiar
         DB::table('category_product')->truncate();
